@@ -20,7 +20,7 @@ public class Main extends JPanel implements ActionListener {
         timer = new Timer(100, this); // Atualiza a cada 100ms
         addKeyListener(new AdaptadorTeclado());
         setFocusable(true);
-        setPreferredSize(new Dimension(1280, 720)); // Ajuste o tamanho para o novo tabuleiro
+        setPreferredSize(new Dimension(600, 600)); // Ajuste o tamanho para o novo tabuleiro
         perdeu = false;
         timer.start();
     }
@@ -29,6 +29,7 @@ public class Main extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (!perdeu) {
             tabuleiro.atualizar();
+            destruirInimigos();
             verificarPerda();
             repaint();
         }
@@ -73,10 +74,23 @@ public class Main extends JPanel implements ActionListener {
                 }
             }
         }
-        for (Inimigo inimigo : tabuleiro.getInimigos()) {
+        for (Inimigo inimigo : tabuleiro.getInimigos()){
             if (jogador.getPosicao().getX() == inimigo.getPosicao().getX()
                     && jogador.getPosicao().getY() == inimigo.getPosicao().getY()) {
                 perdeu = true;
+            }
+        }
+    }
+
+    private void destruirInimigos(){
+        for (Explosao explosao : tabuleiro.getExplosoes()){
+            for(Inimigo inimigo : tabuleiro.getInimigos()) {
+                for(Posicao pos : explosao.getPosicoesAfetadas()){
+                if (inimigo.getPosicao().getX() == pos.getX() && inimigo.getPosicao().getY() == pos.getY()) {
+                    inimigo.morrer();
+                    System.out.println("Morreu");
+                    }
+                }
             }
         }
     }

@@ -122,15 +122,7 @@ public class Tabuleiro {
         }
     }
 
-    private void destruirInimigos(Explosao explosao){
-        for (Posicao pos : explosao.getPosicoesAfetadas()) {
-            for(Inimigo inimigo : inimigos) {
-                if (inimigo.getPosicao().getX() == pos.getX() && inimigo.getPosicao().getY() == pos.getY()) {
-                    inimigo.morrer();
-                }
-            }
-        }
-    }
+    
     public boolean temParede(int x, int y) {
         return paredes[x][y];
     }
@@ -181,10 +173,13 @@ public class Tabuleiro {
             Posicao pos = jogador.getPosicao();
             g.fillRect(pos.getX() * 40, pos.getY() * 40, 40, 40);
         }
+
         g.setColor(Color.GREEN);
         for(Inimigo inimigo: inimigos){
             Posicao pos= inimigo.getPosicao();
+            if(inimigo.isVivo()){
             g.fillRect(pos.getX() *40, pos.getY() *40, 40,40);
+            }
         }
     }
 }
