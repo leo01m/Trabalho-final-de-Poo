@@ -16,6 +16,7 @@ public class Jogador {
     public void moverParaCima(Tabuleiro tabuleiro) {
         if (tabuleiro.isPosicaoValida(posicao.getX(), posicao.getY() - velocidade)) {
             posicao.mover(0, -velocidade);
+
         }
     }
 

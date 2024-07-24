@@ -12,7 +12,9 @@ public class Main extends JPanel implements ActionListener {
     private Tabuleiro tabuleiro;
     private Jogador jogador;
     private Timer timer;
+    private double cooldownPlayer;
     private boolean perdeu;
+
     public Main() {
         tabuleiro = new Tabuleiro(13, 13); // Tabuleiro 13x13
         jogador = new Jogador(1, 1, 1); // Posição inicial (1, 1)
@@ -20,8 +22,9 @@ public class Main extends JPanel implements ActionListener {
         timer = new Timer(100, this); // Atualiza a cada 100ms
         addKeyListener(new AdaptadorTeclado());
         setFocusable(true);
-        setPreferredSize(new Dimension(600, 600)); // Ajuste o tamanho para o novo tabuleiro
+        setPreferredSize(new Dimension(520, 520)); // Ajuste o tamanho para o novo tabuleiro
         perdeu = false;
+        cooldownPlayer=0;
         timer.start();
     }
 
@@ -50,18 +53,28 @@ public class Main extends JPanel implements ActionListener {
         @Override
         public void keyPressed(KeyEvent e) {
             if (!perdeu) {
-                int key = e.getKeyCode();
-                if (key == KeyEvent.VK_LEFT) {
-                    jogador.moverParaEsquerda(tabuleiro);
-                } else if (key == KeyEvent.VK_RIGHT) {
-                    jogador.moverParaDireita(tabuleiro);
-                } else if (key == KeyEvent.VK_UP) {
-                    jogador.moverParaCima(tabuleiro);
-                } else if (key == KeyEvent.VK_DOWN) {
-                    jogador.moverParaBaixo(tabuleiro);
-                } else if (key == KeyEvent.VK_SPACE) {
-                    jogador.colocarBomba(tabuleiro);
+                if (cooldownPlayer > 0) {
+                    cooldownPlayer--;
+                } else {
+                    int key = e.getKeyCode();
+                    if (key == KeyEvent.VK_LEFT) {
+                        jogador.moverParaEsquerda(tabuleiro);
+                        cooldownPlayer=0;
+                    } else if (key == KeyEvent.VK_RIGHT) {
+                        jogador.moverParaDireita(tabuleiro);
+                        cooldownPlayer=0;
+                    } else if (key == KeyEvent.VK_UP) {
+                        jogador.moverParaCima(tabuleiro);
+                        cooldownPlayer=0;
+                    } else if (key == KeyEvent.VK_DOWN) {
+                        jogador.moverParaBaixo(tabuleiro);
+                        cooldownPlayer=0;
+                    } else if (key == KeyEvent.VK_SPACE) {
+                        jogador.colocarBomba(tabuleiro);
+                        cooldownPlayer=0;
+                    }
                 }
+
             }
         }
     }
@@ -74,21 +87,21 @@ public class Main extends JPanel implements ActionListener {
                 }
             }
         }
-        for (Inimigo inimigo : tabuleiro.getInimigos()){
+        for (Inimigo inimigo : tabuleiro.getInimigos()) {
             if (jogador.getPosicao().getX() == inimigo.getPosicao().getX()
-                    && jogador.getPosicao().getY() == inimigo.getPosicao().getY()) {
+                    && jogador.getPosicao().getY() == inimigo.getPosicao().getY() && inimigo.isVivo()) {
                 perdeu = true;
             }
         }
     }
 
-    private void destruirInimigos(){
-        for (Explosao explosao : tabuleiro.getExplosoes()){
-            for(Inimigo inimigo : tabuleiro.getInimigos()) {
-                for(Posicao pos : explosao.getPosicoesAfetadas()){
-                if (inimigo.getPosicao().getX() == pos.getX() && inimigo.getPosicao().getY() == pos.getY()) {
-                    inimigo.morrer();
-                    System.out.println("Morreu");
+    private void destruirInimigos() {
+        for (Explosao explosao : tabuleiro.getExplosoes()) {
+            for (Inimigo inimigo : tabuleiro.getInimigos()) {
+                for (Posicao pos : explosao.getPosicoesAfetadas()) {
+                    if (inimigo.getPosicao().getX() == pos.getX() && inimigo.getPosicao().getY() == pos.getY()) {
+                        inimigo.morrer();
+                        System.out.println("Morreu");
                     }
                 }
             }
@@ -102,6 +115,8 @@ public class Main extends JPanel implements ActionListener {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
+        frame.setLocationRelativeTo(null);
+        frame.setResizable(false);
         main.requestFocusInWindow(); // Garante que o painel receba foco para os eventos de teclado
     }
 }

@@ -15,6 +15,7 @@ public class Tabuleiro {
     private List<Inimigo> inimigos;
     private boolean[][] paredes;
     private boolean[][] caixas;
+    private boolean[][] bombasColid;
     private Random random;
 
     public Tabuleiro(int largura, int altura) {
@@ -26,13 +27,14 @@ public class Tabuleiro {
         this.inimigos= new ArrayList<>();
         paredes = new boolean[largura][altura];
         caixas = new boolean[largura][altura];
+        bombasColid= new boolean[largura][altura];
         random = new Random();
         gerarObstaculos();
         gerarInimigos();
     }
     private void gerarInimigos(){
-        inimigos.add(new Inimigo(3, 3, 10));
-        inimigos.add(new Inimigo(5, 5, 15));
+        inimigos.add(new Inimigo(3, 3, 1));
+        inimigos.add(new Inimigo(5, 5, 1));
     }
 
     public int getLargura() {
@@ -78,11 +80,12 @@ public class Tabuleiro {
     }
 
     public boolean isPosicaoValida(int x, int y) {
-        return x >= 0 && x < largura && y >= 0 && y < altura && !paredes[x][y] && !caixas[x][y];
+        return x >= 0 && x < largura && y >= 0 && y < altura && !paredes[x][y] && !caixas[x][y] && !bombasColid[x][y];
     }
 
     public void colocarBomba(Bomba bomba) {
         bombas.add(bomba);
+        bombasColid[bomba.getPosicao().getX()][bomba.getPosicao().getY()]=true;
     }
 
     public void atualizar() {
@@ -94,6 +97,7 @@ public class Tabuleiro {
                 explosoes.add(explosao);
                 destruirCaixas(explosao);
                 bombasExplodidas.add(bomba);
+                bombasColid[bomba.getPosicao().getX()][bomba.getPosicao().getY()]= false;
             }
         }
         bombas.removeAll(bombasExplodidas);
