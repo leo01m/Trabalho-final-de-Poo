@@ -32,6 +32,7 @@ public class Tabuleiro {
         gerarObstaculos();
         gerarInimigos();
     }
+    
     private void gerarInimigos(){
         inimigos.add(new Inimigo(3, 3, 1));
         inimigos.add(new Inimigo(5, 5, 1));
@@ -137,11 +138,10 @@ public class Tabuleiro {
 
     public void renderizar(Graphics g) {
         // Renderizar paredes
-        g.setColor(Color.GRAY);
         for (int i = 0; i < largura; i++) {
             for (int j = 0; j < altura; j++) {
                 if (paredes[i][j]) {
-                    g.fillRect(i * 40, j * 40, 40, 40);
+                    g.fillRect(i*40, j*40, 40, 40);
                 }
             }
         }
