@@ -1,6 +1,7 @@
 package testeBomberman;
 
 import java.awt.*;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -35,6 +36,8 @@ public class Tabuleiro {
     
     private void gerarInimigos(){
         inimigos.add(new Inimigo(3, 3, 1));
+        inimigos.add(new Inimigo(10, 10, 1));
+        inimigos.add(new Inimigo(7, 7, 1));
         inimigos.add(new Inimigo(5, 5, 1));
     }
 
@@ -73,7 +76,7 @@ public class Tabuleiro {
         // Gerar caixas aleatórias, garantindo que não sobreponham jogadores
         for (int i = 1; i < largura - 1; i++) {
             for (int j = 1; j < altura - 1; j++) {
-                if (!paredes[i][j] && random.nextFloat() < 0.2) { // 20% de chance de ter uma caixa
+                if (!paredes[i][j] && random.nextFloat() < 0.25) { // 25% de chance de ter uma caixa
                     caixas[i][j] = true;
                 }
             }

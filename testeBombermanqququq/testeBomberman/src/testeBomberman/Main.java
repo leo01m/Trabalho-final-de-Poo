@@ -15,6 +15,7 @@ public class Main extends JPanel implements ActionListener {
     private Timer timer;
     private double cooldownPlayer;
     private boolean perdeu;
+    private boolean venceu;
     private JPanel menuPanel;
     private JPanel gamePanel;
     
@@ -52,12 +53,7 @@ public class Main extends JPanel implements ActionListener {
 
         // Inicializa o painel do jogo
         gamePanel = new JPanel() {
-            /**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
-			@Override
+            @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 tabuleiro.renderizar(g);
@@ -65,6 +61,10 @@ public class Main extends JPanel implements ActionListener {
                     g.setColor(Color.RED);
                     g.setFont(new Font("Arial", Font.BOLD, 50));
                     g.drawString("Você Perdeu!", 150, 300);
+                } else if (venceu) {
+                    g.setColor(Color.GREEN);
+                    g.setFont(new Font("Arial", Font.BOLD, 50));
+                    g.drawString("Você Venceu!", 150, 300);
                 }
             }
         };
@@ -81,9 +81,9 @@ public class Main extends JPanel implements ActionListener {
         jogador = new Jogador(1, 1, 1); // Posição inicial (1, 1)
         tabuleiro.adicionarJogador(jogador);
     
-
         timer = new Timer(100, this); // Atualiza a cada 100ms
         perdeu = false;
+        venceu = false;
         cooldownPlayer = 0;
         timer.start();
 
@@ -104,10 +104,11 @@ public class Main extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (!perdeu) {
+        if (!perdeu && !venceu) {
             tabuleiro.atualizar();
             destruirInimigos();
             verificarPerda();
+            verificarVitoria();
             repaint();
         }
     }
@@ -115,7 +116,7 @@ public class Main extends JPanel implements ActionListener {
     private class AdaptadorTeclado extends KeyAdapter {
         @Override
         public void keyPressed(KeyEvent e) {
-            if (!perdeu) {
+            if (!perdeu && !venceu) {
                 if (cooldownPlayer > 0) {
                     cooldownPlayer--;
                 } else {
@@ -140,6 +141,7 @@ public class Main extends JPanel implements ActionListener {
             }
         }
     }
+
     private void verificarPerda() {
         for (Explosao explosao : tabuleiro.getExplosoes()) {
             for (Posicao pos : explosao.getPosicoesAfetadas()) {
@@ -155,6 +157,17 @@ public class Main extends JPanel implements ActionListener {
             }
         }
     }
+
+    private void verificarVitoria() {
+        // Verifica se todos os inimigos foram mortos
+        for (Inimigo inimigo : tabuleiro.getInimigos()) {
+            if (inimigo.isVivo()) {
+                return; // Se algum inimigo ainda está vivo, o jogador não venceu
+            }
+        }
+        venceu = true; // Todos os inimigos foram mortos
+    }
+
     private void destruirInimigos() {
         for (Explosao explosao : tabuleiro.getExplosoes()) {
             for (Inimigo inimigo : tabuleiro.getInimigos()) {
@@ -167,6 +180,7 @@ public class Main extends JPanel implements ActionListener {
             }
         }
     }
+
     public static void main(String[] args) {
         JFrame frame = new JFrame("Bomberman");
         Main main = new Main();
